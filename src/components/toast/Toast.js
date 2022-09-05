@@ -3,96 +3,78 @@ import { useEffect } from 'react/cjs/react.development';
 import styles from './Toast.module.css'
 
 let list = []
+let a = true
 
 let toastProperties = null;
 
-export const toast = (type) => {
+export const toast = (text, set_list, type) => {
   switch (type) {
     case 'success':
       toastProperties = {
         id: list.length + 1,
-        title: 'Success',
-        description: 'This is a success toast component',
+        title: text[0],
+        description: text[1],
         backgroundColor: '#5cb85c'
       }
       break;
-    case 'danger':
+    case 'error':
       toastProperties = {
         id: list.length + 1,
-        title: 'Danger',
-        description: 'This is a danger toast component',
+        title: text[0],
+        description: text[1],
         backgroundColor: '#d9534f'
       }
       break;
     case 'info':
       toastProperties = {
         id: list.length + 1,
-        title: 'Info',
-        description: 'This is a info toast component',
+        title: text[0],
+        description: text[1],
         backgroundColor: '#5bc0de'
       }
       break;
     case 'warning':
       toastProperties = {
         id: list.length + 1,
-        title: 'Warning',
-        description: 'This is a warning toast component',
+        title: text[0],
+        description: text[1],
         backgroundColor: '#f0ad4e'
       }
       break;
     default:
       toastProperties = {
         id: list.length + 1,
-        title: 'Warning',
-        description: 'This is a warning toast component',
+        title: text[0],
+        description: text[1],
         backgroundColor: '#444'
       }
   }
   list = [...list, toastProperties]
-
+  a = !a
+  set_list(!a)
 };
 
 
-
-
 const ToastProvider = ({ position = "buttom-right" }) => {
-
-  const [_list, _setList] = useState(false);
-
-
-  const deleteToast = useCallback(id => {
-    const toastListItem = list.filter(e => e.id !== id);
-    list = toastListItem
-    _setList(!_list)
-  }, [_list]);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (list.length) {
-        deleteToast(list[0].id);
-      }
-    }, 3000);
-
-    _setList(!_list)
-    return () => {
-      clearInterval(interval);
-    }
-
-  }, [_list]);
-
   return (
     <div className={`${styles.container} ${styles[position]}`}>
       {
         list.map((toast, i) => (
           <div
             key={i}
+            id={i}
+            ref={() => setTimeout(() => {
+              document.getElementById(i).style.display = 'none'; document.getElementById(i).style.visibility = 'hidden'
+            }, 8000)}
             className={`${styles.notification} ${styles.toast} ${styles[position]}`}
-            style={{ backgroundColor: toast.backgroundColor }}
+            style={{ backgroundColor: toast.backgroundColor ,position: 'relative'}}
           >
-            <button onClick={() => deleteToast(toast.id)}>X</button>
-            <div>
-              <p className={styles.title}>{toast.title}</p>
-              <p className={styles.description}>{toast.description}</p>
+
+
+            <div >
+                <p style={{position:'absolute',top:1, cursor:'pointer' }} onClick={() => { document.getElementById(i).style.display = 'none'; document.getElementById(i).style.visibility = 'hidden' }}>X</p>
+                <p style={{ textAlign: 'right',marginLeft: 'auto',paddingBottom:5, marginTop:-2 }} className={styles.title}>{toast.title}</p>
+              <p style={{ textAlign: 'right', marginLeft: 'auto' }} className={styles.description}>{toast.description}</p>
             </div>
           </div>
         ))
